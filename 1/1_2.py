@@ -3,7 +3,7 @@ from time import time
 # External file for data
 data_in = "data.txt"
 
-# Read every line from txt file
+# Read every line from txt file into an array
 def load_data(file_in):
     data = []
     with open(file_in) as curfile:
@@ -11,10 +11,9 @@ def load_data(file_in):
             data.append(line)
     return data
 
-# Calculate fuel need for module
-def calc_mass(module_mass):
+# Calculate the fuel need for a single module
+def calc_fuel(module_mass):
     fuel_needed = int(module_mass // 3) - 2
-    #print(fuel_needed)
     return fuel_needed
 
 # Main
@@ -23,13 +22,11 @@ total_fuel = 0
 
 modules = load_data(data_in)
 
-# Iterate modules
 for module in modules:
-    fuel_need = calc_mass(int(module))
+    fuel_need = calc_fuel(int(module))
 
     while fuel_need > 0:
         total_fuel += fuel_need
-        fuel_need = calc_mass(fuel_need)
-
+        fuel_need = calc_fuel(fuel_need)
 
 print(f"Total fuel need = {total_fuel}. Calculated in {(time()-start_time)} seconds.")

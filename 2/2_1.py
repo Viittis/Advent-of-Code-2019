@@ -7,21 +7,17 @@ data_in = "data.txt"
 # Read txt file into an array
 def load_data(file_in):
     data = []
-
     with open(file_in) as curfile:
         for line in curfile.read().split(','):
             data.append(int(line))
-
     return do_replacements(data)
 
 
 # Do specified replacements
 def do_replacements(code_in):
     replacements = [(1, 12), (2, 2)]
-
     for x in replacements:
         code_in[x[0]] = x[1]
-
     return code_in
 
 

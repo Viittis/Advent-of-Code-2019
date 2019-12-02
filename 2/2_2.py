@@ -7,28 +7,23 @@ data_in = "data.txt"
 # Read txt file into an array
 def load_data(file_in):
     data = []
-
     with open(file_in) as curfile:
         for line in curfile.read().split(','):
             data.append(int(line))
-
     return data
 
 
 # Do specified replacements
 def do_replacements(code_in, pos1, pos2):
     replacements = [(1, pos1), (2, pos2)]
-
     for x in replacements:
         code_in[x[0]] = x[1]
-
     return code_in
 
 
 # Handle intcode
 def handle_intcode(code_in):
     i = 0
-
     while i < len(code_in):
         if code_in[i] == 1:
             code_in[code_in[i + 3]] = code_in[code_in[i + 1]] + code_in[code_in[i + 2]]
@@ -38,7 +33,6 @@ def handle_intcode(code_in):
             return code_in[0]
         else:
             break
-
         i += 4
 
 

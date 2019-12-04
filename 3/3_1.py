@@ -1,8 +1,5 @@
 from time import time
 
-# External file for data
-data_in = "data.txt"
-
 # Read txt file into an array
 def load_data(file_in):
     data = []
@@ -11,10 +8,12 @@ def load_data(file_in):
             data.append(line.split(","))
     return data
 
-# Wirepoints to numeric values
+
+# Wires to wirepoints
 def map_wire_points(data_in):
     wire_points = []
     for wire in data_in:
+        cur_wire = []
         x = 0
         y = 0
         for wire_point in wire:
@@ -29,10 +28,14 @@ def map_wire_points(data_in):
                     x -= 1
                 if dir == "R":
                     x += 1
-                wire_points.append((x,y))
 
+                cur_wire.append((x,y))
+
+        wire_points.append(cur_wire)
     return wire_points
 
+
+# Return manhattan distance
 def manhattan_distance(vectors):
     values = []
     for vector in vectors:
@@ -40,38 +43,26 @@ def manhattan_distance(vectors):
     values.sort()
     return values[0]
 
-def remove_duplicates(data_in):
-    uniques = set(data_in[0])
-    uniques.update(data_in[1])
 
-    duplicates = []
+# Return only intersecting values
+def intersect_lists(list_in):
+    s1 = set(list_in[0])
+    s2 = set(list_in[1])
+    return (list(s1.intersection(s2)))
 
-    for list in data_in:
-        for coords in list:
-            if coords not in uniques:
-                duplicates.append(coords)
-
-    return duplicates
 
 # Main
 def main():
     start_time = time()
 
-    #wires = load_data(data_in)
+    # Load puzzle input
+    wires = load_data("data.txt")
 
-    wires = []
-    wires.append(["R98", "U47", "R26", "D63", "R33", "U87", "L62", "D20", "R33", "U53", "R51"])
-    wires.append(["U98", "R91", "D20", "R16", "D67", "R40", "U7", "R15", "U6", "R7"])
-
-    #wires.append(["R8","U5","L5","D3"])
-    #wires.append(["U7","R6","D4","L4"])
-
+    # Get all wirepoints
     points = map_wire_points(wires)
-    print("Removing duplicates....")
 
-    #duplicates = [x for x in points[0] if x in points[1]]
-    duplicates = remove_duplicates(points)
-    print("ok")
+    # Intersecting values
+    duplicates = intersect_lists(points)
 
     result = manhattan_distance(duplicates)
 

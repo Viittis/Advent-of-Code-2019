@@ -1,8 +1,10 @@
 from time import time
-
 # Validate pw against given rules
+
+# 4.2// pw:ssä pitää aina olla lukupari, jos ei ole lukuparia, mutta esim. kolme peräkkäistä, niin ei lasketa.
 def validate_pw(pw_in):
     pw_list = [x for x in str(pw_in)]
+
     pair_found = (any([pw_list[i],pw_list[i]] == pw_list[i:i+2] for i in range(len(pw_list) - 1)))
 
     if(pair_found):
@@ -12,6 +14,7 @@ def validate_pw(pw_in):
         return True
     else:
         return False
+
 
 # Main
 def main():

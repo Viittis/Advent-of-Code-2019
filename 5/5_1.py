@@ -64,12 +64,9 @@ def parse_intcode(intcode_in, comp_input):
         if opcode == 1 or opcode == 2:
             dataset_size = 4
 
-            write_to = intcode_in[i+3] # if parameters[2] == 0 else intcode_in[i+3]
+            write_to = intcode_in[intcode_in[i+3]] # if parameters[2] == 0 else intcode_in[i+3]
             value2 = intcode_in[intcode_in[i+2]] if parameters[1] == 0 else intcode_in[i+2]
             value1 = intcode_in[intcode_in[i+1]] if parameters[0] == 0 else intcode_in[i+1]
-
-            print("write_to, value1, value2")
-            print(write_to, value1, value2)
 
             intcode_in[write_to] = do_calc(value1, opcode, value2)
         elif opcode == 3:
@@ -92,7 +89,7 @@ def parse_intcode(intcode_in, comp_input):
 def main():
     # Puzzle input/data
     int_code = load_data(data_in)
-    int_code = [1002,4,3,4,33]
+    #int_code = [1002,4,3,4,33]
     computer_input = 1
 
     result = parse_intcode(int_code, computer_input)

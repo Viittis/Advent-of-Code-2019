@@ -59,24 +59,20 @@ def parse_intcode(intcode_in, comp_input):
         # returns a list in format [opcode, [3 params] *default param 0]
         opcode, parameters = parse_opcode(intcode_in[i])
 
-        print(f"i = {i}. opcode {opcode} parametrit {parameters}")
-
         if opcode == 1 or opcode == 2:
             dataset_size = 4
-
-            write_to = intcode_in[intcode_in[i+3]] # if parameters[2] == 0 else intcode_in[i+3]
+            write_to = intcode_in[i+3] # if parameters[2] == 0 else intcode_in[i+3]
             value2 = intcode_in[intcode_in[i+2]] if parameters[1] == 0 else intcode_in[i+2]
             value1 = intcode_in[intcode_in[i+1]] if parameters[0] == 0 else intcode_in[i+1]
-
             intcode_in[write_to] = do_calc(value1, opcode, value2)
         elif opcode == 3:
             dataset_size = 2
-            intcode_in[i + 1] = comp_input
+            intcode_in[intcode_in[i + 1]] = comp_input
         elif opcode == 4:
             dataset_size = 2
-            print(intcode_in[i + 1])
+            print(intcode_in[intcode_in[i + 1]])
         elif opcode == 99:
-            return intcode_in[0]
+            return True
         else:
             dataset_size = 1
             print("ERROR")
@@ -87,14 +83,15 @@ def parse_intcode(intcode_in, comp_input):
 
 # Main
 def main():
+    start_time = time()
+
     # Puzzle input/data
     int_code = load_data(data_in)
-    #int_code = [1002,4,3,4,33]
     computer_input = 1
 
-    result = parse_intcode(int_code, computer_input)
+    complete = parse_intcode(int_code, computer_input)
 
-    print("Ready:", result)
+    print(f"Ready. Calculated in {(time() - start_time)} seconds.")
 
 
 if __name__ == '__main__':

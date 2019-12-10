@@ -55,17 +55,23 @@ def do_calc(value1, opcode, value2):
 # Parse intcode
 def parse_intcode(intcode_in, comp_input):
     i = 0
-    while i < len(intcode_in):
+    while True:
         # returns a list in format [opcode, [3 params] *default param 0]
         opcode, parameters = parse_opcode(intcode_in[i])
 
         print("i:", i, "opcode and params:", opcode, parameters)
 
+        if opcode == 99:
+            print("Ready")
+            return True
+
+        # Assign values
+        value1 = intcode_in[intcode_in[i + 1]] if parameters[0] == 0 else intcode_in[i + 1]
+        value2 = intcode_in[intcode_in[i + 2]] if parameters[1] == 0 else intcode_in[i + 2]
+        write_to = intcode_in[i + 3] if parameters[2] == 0 else intcode_in[i+3]
+
         if opcode == 1 or opcode == 2:
             dataset_size = 4
-            write_to = intcode_in[i+3] # if parameters[2] == 0 else intcode_in[i+3]
-            value2 = intcode_in[intcode_in[i+2]] if parameters[1] == 0 else intcode_in[i+2]
-            value1 = intcode_in[intcode_in[i+1]] if parameters[0] == 0 else intcode_in[i+1]
             intcode_in[write_to] = do_calc(value1, opcode, value2)
         elif opcode == 3:
             dataset_size = 2
@@ -73,34 +79,34 @@ def parse_intcode(intcode_in, comp_input):
         elif opcode == 4:
             dataset_size = 2
             print(intcode_in[intcode_in[i + 1]])
-        elif opcode == 5:
-            if parameters[0] != 0:
-                i = parameters[1]
+        elif opcode == 5: # jump if true
+            if value1:
+                i = value2
                 dataset_size = 0
             else:
-                dataset_size = 1
-        elif opcode == 6:
-            if parameters[0] == 0:
-                i = parameters[1]
+                dataset_size = 3
+        elif opcode == 6: # jump if false
+            if value1 == 0:
+                i = value2
                 dataset_size = 0
             else:
-                dataset_size = 1
-        elif opcode == 7:
-            dataset_size = 0
-            if parameters[0] < parameters[1]:
-                intcode_in[parameters[2]] == 1
+                dataset_size = 3
+        elif opcode == 7: # less than
+            dataset_size = 4
+            if value1 < value2:
+                intcode_in[write_to] == 1
             else:
-                intcode_in[parameters[2]] == 1
-        elif opcode == 8:
-            dataset_size = 0
-            if parameters[0] == parameters[1]:
-                intcode_in[parameters[2]] == 1
+                intcode_in[write_to] == 0
+        elif opcode == 8: # equals
+            dataset_size = 4
+            if value1 == value2:
+                intcode_in[write_to] == 1
             else:
-                intcode_in[parameters[2]] == 1
+                intcode_in[write_to] == 0
         elif opcode == 99:
+            print("RESULT:", comp_input)
             return True
         else:
-            dataset_size = 1
             print("ERROR")
             break
 

@@ -15,34 +15,17 @@ def load_data(file_in):
     return data
 
 
-# Parse opcode
-def parse_opcode(opcode_in):
-    data_out = []
+# Parse instructions
+def parse_instructions(instructions_in):
 
-    # Opcode
-    str_opcode = str(opcode_in)
-    opcode = str_opcode[-2:] if str_opcode[-2:] else None
+    instructions_out = []
 
-    # Params
-    i = 0
-    params = str_opcode[-(len(opcode)+1)::-1]
-    while i < len(params):
-        if i == (len(params)-2):
-            if params[i+1] == '-':
-                value = params[i+1] + params[i]
-                i += 1
-            else:
-                value = params[i]
-        else:
-            value = params[i]
-        i += 1
-        data_out.append(int(value))
+    opcode = instructions_in % 100
+    param1 = instructions_in // 100 % 10
+    param2 = instructions_in // 1000 % 10
+    param3 = instructions_in // 10000 % 10
 
-    # If there's less than 3 params, add zeroes to reach len=3
-    while len(data_out) < 3:
-        data_out.append(0)
-
-    return int(opcode), data_out
+    return [opcode, param1, param2, param3]
 
 
 # Calculate
@@ -55,63 +38,54 @@ def do_calc(value1, opcode, value2):
 # Parse intcode
 def parse_intcode(intcode_in, comp_input):
     i = 0
-    while True:
-        # returns a list in format [opcode, [3 params] *default param 0]
-        opcode, parameters = parse_opcode(intcode_in[i])
 
-        print("i:", i, "opcode and params:", opcode, parameters)
+    while True:
+        # returns a list in format [opcode, param1, param2, param3]
+        params = parse_instructions(intcode_in[i])
+        opcode = params[0]
 
         if opcode == 99:
-            print("Ready")
-            return True
+            return dg_code
 
         # Assign values
-        value1 = intcode_in[intcode_in[i + 1]] if parameters[0] == 0 else intcode_in[i + 1]
-        value2 = intcode_in[intcode_in[i + 2]] if parameters[1] == 0 else intcode_in[i + 2]
-        write_to = intcode_in[i + 3] if parameters[2] == 0 else intcode_in[i+3]
+        noun = i + 1 if params[1] else intcode_in[i + 1]
+        verb = i + 2 if params[2] else intcode_in[i + 2]
+        write_to = i + 3 if params[3]  else intcode_in[i + 3]
 
         if opcode == 1 or opcode == 2:
-            dataset_size = 4
-            intcode_in[write_to] = do_calc(value1, opcode, value2)
+            intcode_in[write_to] = do_calc(intcode_in[noun], opcode, intcode_in[verb])
+            i += 4
         elif opcode == 3:
-            dataset_size = 2
-            intcode_in[intcode_in[i + 1]] = comp_input
+            intcode_in[noun] = comp_input
+            i += 2
         elif opcode == 4:
-            dataset_size = 2
-            print(intcode_in[intcode_in[i + 1]])
+            dg_code = intcode_in[noun]
+            i += 2
         elif opcode == 5: # jump if true
-            if value1:
-                i = value2
-                dataset_size = 0
+            if intcode_in[noun]:
+                i = intcode_in[verb]
             else:
-                dataset_size = 3
+                i += 3
         elif opcode == 6: # jump if false
-            if value1 == 0:
-                i = value2
-                dataset_size = 0
+            if intcode_in[noun] == 0:
+                i = intcode_in[verb]
             else:
-                dataset_size = 3
+                i += 3
         elif opcode == 7: # less than
-            dataset_size = 4
-            if value1 < value2:
-                intcode_in[write_to] == 1
+            if intcode_in[noun] < intcode_in[verb]:
+                intcode_in[write_to] = 1
             else:
-                intcode_in[write_to] == 0
+                intcode_in[write_to] = 0
+            i += 4
         elif opcode == 8: # equals
-            dataset_size = 4
-            if value1 == value2:
-                intcode_in[write_to] == 1
+            if intcode_in[noun] == intcode_in[verb]:
+                intcode_in[write_to] = 1
             else:
-                intcode_in[write_to] == 0
-        elif opcode == 99:
-            print("RESULT:", comp_input)
-            return True
+                intcode_in[write_to] = 0
+            i += 4
         else:
-            print("ERROR")
+            print("ERROR:", opcode)
             break
-
-        i += dataset_size
-        print("--ROUND OK--")
 
 # Main
 def main():
@@ -121,9 +95,9 @@ def main():
     int_code = load_data(data_in)
     computer_input = 5
 
-    complete = parse_intcode(int_code, computer_input)
+    result = parse_intcode(int_code, computer_input)
 
-    print(f"Ready. Calculated in {(time() - start_time)} seconds.")
+    print(f"Diagnostic code = {result}. Calculated in {(time() - start_time)} seconds.")
 
 
 if __name__ == '__main__':

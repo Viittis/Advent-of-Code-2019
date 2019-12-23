@@ -20,4 +20,32 @@ def test2():
             else:
                 break
 
+# Read txt file into a list
+def load_data(file_in):
+    planets = []
+    with open(file_in) as curfile:
+        for line in curfile.read().splitlines():
+            data = line.split(")")
+            planet = Planet(data[0])
+            planet.add_child(data[1])
+
+            planet_names = [x.name for x in planets]
+
+            if planet.name not in planet_names:
+                planets.append(planet)
+            else:
+                i = planet_names.index(planet.name)
+                planets[i].add_child(data[1])
+
+    return planets
+
+# Class for planets
+class Planet:
+    def __init__(self, name):
+        self.name = name
+        self.children = []
+
+    def add_child(self, new_child):
+        self.children.append(new_child)
+
 test2()
